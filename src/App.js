@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, Component } from "react";
+import "./App.css";
+import Navbar from "./components/layout/Navbar";
+import Users from "./components/users/Users";
+import axios from "axios";
+class App extends Component {
+    state = {
+        users: [],
+        loading: false
+    };
+    async componentDidMount() {
+        this.setState({
+            loading: true
+        });
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+        const res = await axios.get(
+            `https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+        );
+        console.log(process.env.REACT_APP_GITHUB_CLIENT_ID);
+
+        this.setState({
+            users: res.data,
+            loading: false
+        });
+        console.log(res.data);
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <Navbar title="Github-finder" icon="fab fa-github" />
+                <div className="container">
+                    <Users
+                        loading={this.state.loading}
+                        users={this.state.users}
+                    />
+                </div>
+            </div>
+        );
+    }
 }
 
 export default App;
